@@ -86,6 +86,20 @@ class Tree {
       return curr;
     }
 
+    find(value) {
+      let node = this.root;
+      while(node != null){
+        if(node.value === value) return node;
+        if(value < node.value){
+          node = node.left;
+        }
+        else if(value > node.value){
+          node = node.right;
+        }
+      }    
+      return console.error('Value not in tree');    
+    }
+
     prettyPrint(node, prefix = "", isLeft = true) {
         if (node === null) {
           return;
@@ -103,5 +117,5 @@ class Tree {
 let arr = [1, 7, 4, 23, 8, 9, 67, 7, 10];
 const test = new Tree(arr);
 test.buildTree(arr);
-test.deleteItem(test.root, 8);
 test.prettyPrint(test.root);
+console.log(test.find(10));
