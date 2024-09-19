@@ -33,6 +33,28 @@ class Tree {
         this.root = this.buildTreeRecursive(sortedArray, 0, end); 
     }
 
+    insert(node, value){
+      //Base case - insert node when reaching leaf
+      if(node === null){
+        return new Node(value);
+      }
+      //Second base case, no duplicate values
+      if(node.value === value){
+        return node;
+      }
+      if(value < node.value){
+        node.left = this.insert(node.left, value);
+      }
+      else if(value > node.value){
+        node.right = this.insert(node.right, value);
+      }
+      return node;
+    }
+
+    deleteItem(value){
+      
+    }
+
 
     prettyPrint(node, prefix = "", isLeft = true) {
         if (node === null) {
@@ -51,4 +73,5 @@ class Tree {
 let arr = [1, 7, 4, 23, 8, 9, 67, 7, 10];
 const test = new Tree(arr);
 test.buildTree(arr);
+test.insert(test.root, 12);
 test.prettyPrint(test.root);
