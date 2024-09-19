@@ -51,10 +51,40 @@ class Tree {
       return node;
     }
 
-    deleteItem(value){
-      
+    deleteItem(node, value){
+      //Base case - value not in tree
+      if(node === null) {
+        return node;
+      }
+
+      if(value < node.value){
+        node.left = this.deleteItem(node.left, value);
+      }
+      else if (value > node.value){
+        node.right = this.deleteItem(node.right, value);
+      }
+      else {
+        if(node.left === null) {
+          return node.right;
+        }
+        if(node.right === null) {
+          return node.left;  
+        }
+
+        let succ = this.getSuccesor(node);
+        node.value = succ.value;
+        node.right = this.deleteItem(node.right, succ.value);
+      }
+      return node;
     }
 
+    getSuccesor(curr){
+      curr = curr.right;
+      while(curr !== null && curr.left !== null){
+        curr = curr.left;
+      }
+      return curr;
+    }
 
     prettyPrint(node, prefix = "", isLeft = true) {
         if (node === null) {
@@ -73,5 +103,5 @@ class Tree {
 let arr = [1, 7, 4, 23, 8, 9, 67, 7, 10];
 const test = new Tree(arr);
 test.buildTree(arr);
-test.insert(test.root, 12);
+test.deleteItem(test.root, 8);
 test.prettyPrint(test.root);
