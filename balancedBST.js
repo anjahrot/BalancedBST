@@ -99,6 +99,30 @@ class Tree {
       }    
       return console.error('Value not in tree');    
     }
+    
+    levelOrder(callback) {
+      if(typeof callback != 'function'){
+        throw new Error("A callback function must be passed as parameter");
+      }
+      let node = this.root;
+      if(node === null ) return;
+      let queue = [];
+      queue.push(this.root);
+      while(queue.length != 0){
+        node = queue.shift();
+        callback(node.value);
+        if(node.left != null){
+          queue.push(node.left);
+        }
+        if(node.right != null){
+          queue.push(node.right);
+        }
+      }
+    }
+
+    cb(value) {
+      console.log(`This node's value is ${value}.`);
+    }
 
     prettyPrint(node, prefix = "", isLeft = true) {
         if (node === null) {
@@ -118,4 +142,4 @@ let arr = [1, 7, 4, 23, 8, 9, 67, 7, 10];
 const test = new Tree(arr);
 test.buildTree(arr);
 test.prettyPrint(test.root);
-console.log(test.find(10));
+console.log(test.levelOrder(test.cb));
