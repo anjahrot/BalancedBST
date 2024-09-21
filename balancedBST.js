@@ -108,7 +108,7 @@ class Tree {
       if(node === null ) return;
       let queue = [];
       queue.push(this.root);
-      while(queue.length != 0){
+      while(queue.length != 0){   
         node = queue.shift();
         callback(node.value);
         if(node.left != null){
@@ -120,9 +120,32 @@ class Tree {
       }
     }
 
+    levelOrderRecursive(callback){
+
+    }
+
     cb(value) {
       console.log(`This node's value is ${value}.`);
     }
+
+    //left, root, right  -- heilt ned til venstre først //Stack? 8 - 4 - 1 - leftnull (print) 
+    // rightnull, print 4. Kanskje en rekursiv delmetode?
+    inOrder (callback){
+      if(typeof callback != 'function'){
+        throw new Error("A callback function must be passed as parameter");
+      }
+      let node = this.root;
+      if(node === null) return;
+      let stack = [node];
+      while(node.left != null){
+        node = node.left;
+        stack.push(node);
+      }
+      callback(stack.pop().value);
+    }
+    //preorder root, left, right
+
+    //postorder: left, right, root
 
     prettyPrint(node, prefix = "", isLeft = true) {
         if (node === null) {
@@ -142,4 +165,5 @@ let arr = [1, 7, 4, 23, 8, 9, 67, 7, 10];
 const test = new Tree(arr);
 test.buildTree(arr);
 test.prettyPrint(test.root);
-console.log(test.levelOrder(test.cb));
+// console.log(test.levelOrder(test.cb));
+console.log(test.inOrder(test.cb));
