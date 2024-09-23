@@ -1,13 +1,13 @@
 import Node from "./node.js";
-import {mergesort} from "../Recursion/mergesort.js"
+import {mergesort} from "../Recursion/mergesort.js";
 
-class Tree {
-    constructor(array) {
-        this.array = array;
+export default class Tree {
+    constructor() {
         this.root = null;
-        this.balancedProperty = true;
+        this.balanced = true;
     }
 
+    //Method to prepare array, removing duplicates and sorting
     prepareArray(array) {
         //remove duplicate values using the Set object
         let uniqueArr = [...new Set(array)];
@@ -134,9 +134,11 @@ class Tree {
       if(node.right != null) queue.push(node.right); 
       this.levelOrderRecursive(callback, node, queue);
     }
-
-    cb(value) {
-      console.log(`This node's value is ${value}.`);
+    
+    printLevelOrder() {
+      let array = [];
+      this.levelOrderRecursive((value) => array.push(value));
+      return(array.join(', '));
     }
 
     //left, root, right
@@ -150,6 +152,12 @@ class Tree {
       this.inOrder(callback, node.right);
     }
 
+    printInOrder() {
+      let array = [];
+      this.inOrder((value) => array.push(value));
+      return(array.join(', '));  
+    }
+
     //preorder root, left, right
     preOrder (callback, node=this.root){
       if(typeof callback != 'function'){
@@ -161,6 +169,12 @@ class Tree {
       this.preOrder(callback, node.right);
     }
 
+    printPreOrder() {
+      let array = [];
+      this.preOrder((value) => array.push(value));
+      return(array.join(', '));
+    }
+
     //postorder: left, right, root
     postOrder (callback, node=this.root){
       if(typeof callback != 'function'){
@@ -170,6 +184,12 @@ class Tree {
       this.postOrder(callback, node.left);
       this.postOrder(callback, node.right);
       callback(node.value);
+    }
+
+    printPostOrder() {
+      let array = [];
+      this.postOrder((value) => array.push(value));
+      return(array.join(', '));
     }
 
     height(node=this.root, count=0, array=[]){
@@ -217,15 +237,15 @@ class Tree {
         heightDiff = this.height(node.left)-this.height(node.right);
       }
       if(heightDiff > 1 || heightDiff < -1){
-        this.balancedProperty = false;
-        return;
+        this.balanced = false;
+        return this.balanced;
       }
       else{
         if(node.left != null) queue.push(node.left);
         if(node.right != null) queue.push(node.right);
         this.isBalanced(node, queue);    
       }      
-      return(this.balancedProperty);
+      return(this.balanced);
     }
 
     rebalance() {
@@ -233,6 +253,7 @@ class Tree {
       this.inOrder((value) => {
         sortedArray.push(value);
       });
+      this.balanced = true;
       return this.buildTree(sortedArray);
     }
 
@@ -251,16 +272,5 @@ class Tree {
       }
 }
 
-let arr = [1, 7, 4, 23, 8, 9, 67, 7, 10, 21, 5, 81, 2, 15, 42];
-const test = new Tree(arr);
-test.buildTree(arr);
-test.insert(12);
-test.insert(13);
-test.insert(3);
-test.prettyPrint();
-//console.log(test.levelOrderRecursive(test.root, test.cb));
-console.log('Tree is balanced:',test.isBalanced());
-//test.inOrder(test.cb);
-test.rebalance();
-test.prettyPrint();
+
 
