@@ -202,10 +202,8 @@ class Tree {
       if(queue.length === 0) return;
       
       node = queue.shift();
-      console.log(node.value);
       
       let heightDiff;
-      let boolean = true;
       if(node.left === null && node.right === null){
         heightDiff = 0;
       }
@@ -228,6 +226,14 @@ class Tree {
         this.isBalanced(node, queue);    
       }      
       return(this.balancedProperty);
+    }
+
+    rebalance() {
+      let sortedArray = [];
+      this.inOrder((value) => {
+        sortedArray.push(value);
+      });
+      return this.buildTree(sortedArray);
     }
 
 
@@ -253,8 +259,8 @@ test.insert(13);
 test.insert(3);
 test.prettyPrint();
 //console.log(test.levelOrderRecursive(test.root, test.cb));
-console.log(test);
-console.log('Height is', test.height());
-console.log('Depth is', test.depth(test.root.left));
 console.log('Tree is balanced:',test.isBalanced());
+//test.inOrder(test.cb);
+test.rebalance();
+test.prettyPrint();
 
