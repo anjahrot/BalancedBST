@@ -5,6 +5,7 @@ class Tree {
     constructor(array) {
         this.array = array;
         this.root = null;
+        this.balancedProperty = true;
     }
 
     prepareArray(array) {
@@ -33,7 +34,7 @@ class Tree {
         this.root = this.buildTreeRecursive(sortedArray, 0, end); 
     }
 
-    insert(node, value){
+    insert(value, node=this.root){
       //Base case - insert node when reaching leaf
       if(node === null){
         return new Node(value);
@@ -43,10 +44,10 @@ class Tree {
         return node;
       }
       if(value < node.value){
-        node.left = this.insert(node.left, value);
+        node.left = this.insert(value, node.left);
       }
       else if(value > node.value){
-        node.right = this.insert(node.right, value);
+        node.right = this.insert(value, node.right);
       }
       return node;
     }
@@ -120,7 +121,7 @@ class Tree {
       }
     }
 
-    levelOrderRecursive(node, queue, callback){
+    levelOrderRecursive(callback, node=this.root, queue=[this.root]){
       if(typeof callback != 'function'){
         throw new Error("A callback function must be passed as parameter");
       }
@@ -131,7 +132,7 @@ class Tree {
       callback(node.value);
       if(node.left != null) queue.push(node.left);
       if(node.right != null) queue.push(node.right); 
-      this.levelOrderRecursive(node, queue, callback);
+      this.levelOrderRecursive(callback, node, queue);
     }
 
     cb(value) {
@@ -139,39 +140,98 @@ class Tree {
     }
 
     //left, root, right
-    inOrder (node, callback){
+    inOrder (callback, node=this.root){
       if(typeof callback != 'function'){
         throw new Error("A callback function must be passed as parameter");
       }
       if(node === null) return;
-      this.inOrder(node.left, callback);
+      this.inOrder(callback, node.left);
       callback(node.value);
-      this.inOrder(node.right, callback);
+      this.inOrder(callback, node.right);
     }
 
     //preorder root, left, right
-    preOrder (node, callback){
+    preOrder (callback, node=this.root){
       if(typeof callback != 'function'){
         throw new Error("A callback function must be passed as parameter");
       }
       if(node === null) return;
       callback(node.value);
-      this.preOrder(node.left, callback);
-      this.preOrder(node.right, callback);
+      this.preOrder(callback, node.left);
+      this.preOrder(callback, node.right);
     }
 
     //postorder: left, right, root
-    postOrder (node, callback){
+    postOrder (callback, node=this.root){
       if(typeof callback != 'function'){
         throw new Error("A callback function must be passed as parameter");
       }
       if(node === null) return;
-      this.postOrder(node.left, callback);
-      this.postOrder(node.right, callback);
+      this.postOrder(callback, node.left);
+      this.postOrder(callback, node.right);
       callback(node.value);
     }
 
-    prettyPrint(node, prefix = "", isLeft = true) {
+    height(node=this.root, count=0, array=[]){
+      if(node === null) return;
+      if(node.left === null && node.right === null) return array.push(count); //reached leaf node
+      count++;
+      this.height(node.left, count, array);
+      this.height(node.right, count, array);
+      return(array.reduce((max,n) => n > max ? n : max));  //return maximum value
+    }
+
+    depth(node){
+      let nodeTraverse = this.root;
+      let count = 0;
+      while(node.value != nodeTraverse.value){ 
+        if(node.value < nodeTraverse.value){
+          nodeTraverse = nodeTraverse.left;
+          count++;
+        }
+        else if(node.value > nodeTraverse.value){
+          nodeTraverse = nodeTraverse.right;
+          count++;
+        }
+      }
+      return count;
+    }
+
+    isBalanced(node=this.root, queue=[this.root]){
+      if(node === null) return;
+      if(queue.length === 0) return;
+      
+      node = queue.shift();
+      console.log(node.value);
+      
+      let heightDiff;
+      let boolean = true;
+      if(node.left === null && node.right === null){
+        heightDiff = 0;
+      }
+      else if(node.left === null){
+        heightDiff = this.height(node.right);
+      }
+      else if(node.right === null){
+        heightDiff = this.height(node.left);
+      }
+      else {
+        heightDiff = this.height(node.left)-this.height(node.right);
+      }
+      if(heightDiff > 1 || heightDiff < -1){
+        this.balancedProperty = false;
+        return;
+      }
+      else{
+        if(node.left != null) queue.push(node.left);
+        if(node.right != null) queue.push(node.right);
+        this.isBalanced(node, queue);    
+      }      
+      return(this.balancedProperty);
+    }
+
+
+    prettyPrint(node = this.root, prefix = "", isLeft = true) {
         if (node === null) {
           return;
         }
@@ -185,10 +245,16 @@ class Tree {
       }
 }
 
-let arr = [1, 7, 4, 23, 8, 9, 67, 7, 10];
+let arr = [1, 7, 4, 23, 8, 9, 67, 7, 10, 21, 5, 81, 2, 15, 42];
 const test = new Tree(arr);
 test.buildTree(arr);
-test.prettyPrint(test.root);
-let array = [test.root];
-console.log(test.levelOrderRecursive(test.root, array, test.cb));
+test.insert(12);
+test.insert(13);
+test.insert(3);
+test.prettyPrint();
+//console.log(test.levelOrderRecursive(test.root, test.cb));
+console.log(test);
+console.log('Height is', test.height());
+console.log('Depth is', test.depth(test.root.left));
+console.log('Tree is balanced:',test.isBalanced());
 
