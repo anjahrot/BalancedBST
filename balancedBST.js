@@ -120,32 +120,56 @@ class Tree {
       }
     }
 
-    levelOrderRecursive(callback){
-
+    levelOrderRecursive(node, queue, callback){
+      if(typeof callback != 'function'){
+        throw new Error("A callback function must be passed as parameter");
+      }
+      if(node === null ) return;
+      if(queue.length === 0) return;
+      
+      node = queue.shift();
+      callback(node.value);
+      if(node.left != null) queue.push(node.left);
+      if(node.right != null) queue.push(node.right); 
+      this.levelOrderRecursive(node, queue, callback);
     }
 
     cb(value) {
       console.log(`This node's value is ${value}.`);
     }
 
-    //left, root, right  -- heilt ned til venstre først //Stack? 8 - 4 - 1 - leftnull (print) 
-    // rightnull, print 4. Kanskje en rekursiv delmetode?
-    inOrder (callback){
+    //left, root, right
+    inOrder (node, callback){
       if(typeof callback != 'function'){
         throw new Error("A callback function must be passed as parameter");
       }
-      let node = this.root;
       if(node === null) return;
-      let stack = [node];
-      while(node.left != null){
-        node = node.left;
-        stack.push(node);
-      }
-      callback(stack.pop().value);
+      this.inOrder(node.left, callback);
+      callback(node.value);
+      this.inOrder(node.right, callback);
     }
+
     //preorder root, left, right
+    preOrder (node, callback){
+      if(typeof callback != 'function'){
+        throw new Error("A callback function must be passed as parameter");
+      }
+      if(node === null) return;
+      callback(node.value);
+      this.preOrder(node.left, callback);
+      this.preOrder(node.right, callback);
+    }
 
     //postorder: left, right, root
+    postOrder (node, callback){
+      if(typeof callback != 'function'){
+        throw new Error("A callback function must be passed as parameter");
+      }
+      if(node === null) return;
+      this.postOrder(node.left, callback);
+      this.postOrder(node.right, callback);
+      callback(node.value);
+    }
 
     prettyPrint(node, prefix = "", isLeft = true) {
         if (node === null) {
@@ -165,5 +189,6 @@ let arr = [1, 7, 4, 23, 8, 9, 67, 7, 10];
 const test = new Tree(arr);
 test.buildTree(arr);
 test.prettyPrint(test.root);
-// console.log(test.levelOrder(test.cb));
-console.log(test.inOrder(test.cb));
+let array = [test.root];
+console.log(test.levelOrderRecursive(test.root, array, test.cb));
+
